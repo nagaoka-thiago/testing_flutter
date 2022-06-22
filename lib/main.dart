@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_dragmarker/dragmarker.dart';
+import 'package:flutter_map_line_editor/polyeditor.dart';
 import 'package:latlong2/latlong.dart';
 
 void main() {
@@ -50,8 +52,25 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<LatLng> _points = []; // points clicked on map
-  LatLng _center = LatLng(49.5, -0.09);
+  late PolyEditor _polyEditor;
+  List<Polygon> _polygons = [];
+  var _testPolygon =
+      Polygon(color: Colors.red, points: [], borderStrokeWidth: 5);
+
+  @override
+  void initState() {
+    super.initState();
+    _polyEditor = PolyEditor(
+        points: _testPolygon.points,
+        pointIcon: Icon(Icons.location_on, size: 23, color: Colors.red),
+        addClosePathMarker: true,
+        intermediateIcon: Icon(Icons.lens, size: 15, color: Colors.red),
+        callbackRefresh: () {
+          setState(() {});
+        });
+    _polygons.add(_testPolygon);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,48 +80,26 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: FlutterMap(
           options: MapOptions(
+            allowPanningOnScrollingParent: false,
             onTap: (_, p) {
               setState(() {
-                if (_points.length < 4) {
-                  _points.add(p);
-                }
+                _polyEditor.add(_testPolygon.points, p);
               });
             },
-            center: _center,
-            zoom: 10.0,
+            plugins: [
+              DragMarkerPlugin(),
+            ],
+            zoom: 6.4,
           ),
           layers: [
             TileLayerOptions(
               urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
               subdomains: ['a', 'b', 'c'],
             ),
-            // list of markers formed by points clicked
-            MarkerLayerOptions(
-              markers: _points
-                  .map(
-                    (_point) => Marker(
-                        width: 100.0,
-                        height: 100.0,
-                        point: _point,
-                        builder: (context) {
-                          return Icon(
-                            Icons.location_on,
-                            color: Colors.red,
-                          );
-                        }),
-                  )
-                  .toList(),
-            ),
+            DragMarkerPluginOptions(markers: _polyEditor.edit()),
             // polygon formed by points clicked, only 4 points required
             PolygonLayerOptions(
-              polygons: _points.length == 4
-                  ? [
-                      Polygon(
-                          points: _points,
-                          borderColor: Colors.red,
-                          borderStrokeWidth: 5),
-                    ]
-                  : [],
+              polygons: _polygons,
             )
           ],
         ),
