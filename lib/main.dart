@@ -104,6 +104,13 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              _testPolygon.points.removeLast();
+            });
+          },
+          child: Icon(Icons.delete)),
     );
   }
 }
