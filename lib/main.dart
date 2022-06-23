@@ -96,11 +96,10 @@ class _MyHomePageState extends State<MyHomePage> {
               urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
               subdomains: ['a', 'b', 'c'],
             ),
-            DragMarkerPluginOptions(markers: _polyEditor.edit()),
-            // polygon formed by points clicked, only 4 points required
             PolygonLayerOptions(
               polygons: _polygons,
-            )
+            ),
+            DragMarkerPluginOptions(markers: _polyEditor.edit()),
           ],
         ),
       ),
