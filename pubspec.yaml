@@ -38,6 +38,7 @@ dependencies:
   latlong2: ^0.8.1
   flutter_map_line_editor: ^2.0.0
   flutter_map_dragmarker: ^2.0.0
+  location: ^4.4.0
 
 dev_dependencies:
   flutter_test:

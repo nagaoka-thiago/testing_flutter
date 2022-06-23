@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_dragmarker/dragmarker.dart';
 import 'package:flutter_map_line_editor/polyeditor.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart';
 
 void main() {
   runApp(const MyApp());
@@ -54,8 +55,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late PolyEditor _polyEditor;
   List<Polygon> _polygons = [];
-  var _testPolygon =
-      Polygon(color: Colors.red, points: [], borderStrokeWidth: 5);
+  late Location location;
+  late LatLng firstLocation;
+  var _testPolygon = Polygon(
+      color: Colors.red,
+      points: [],
+      borderStrokeWidth: 5,
+      borderColor: Colors.red);
 
   @override
   void initState() {
@@ -69,6 +75,14 @@ class _MyHomePageState extends State<MyHomePage> {
           setState(() {});
         });
     _polygons.add(_testPolygon);
+
+    location = Location();
+    firstLocation = LatLng(49.5, -0.09);
+    location.onLocationChanged.listen((event) {
+      setState(() {
+        firstLocation = LatLng(event.latitude!, event.longitude!);
+      });
+    });
   }
 
   @override
@@ -86,10 +100,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 _polyEditor.add(_testPolygon.points, p);
               });
             },
+            center: firstLocation,
             plugins: [
               DragMarkerPlugin(),
             ],
-            zoom: 6.4,
+            zoom: 6.3,
           ),
           layers: [
             TileLayerOptions(
